@@ -1,7 +1,7 @@
 const APP_PREFIX = 'my-site-cache-';
 const VERSION = 'v1';
-const CACHE_NAME = APP_PREFIX + VERSION;
-const DATA_CACHE_NAME = "data-cache-" + VERSION;
+const CACHE = APP_PREFIX + VERSION;
+const DATA_CACHE = "data-cache-" + VERSION;
 
 const FILES_TO_CACHE = [
   "/",
@@ -23,7 +23,7 @@ const FILES_TO_CACHE = [
 self.addEventListener("fetch", function(event) {
   if (event.request.url.includes("/api/")) {
     event.respondWith(
-      caches.open(DATA_CACHE_NAME).then(cache => {
+      caches.open(DATA_CACHE).then(cache => {
         return fetch(event.request)
           .then(response => {
             if (response.status === 200) {
@@ -43,8 +43,8 @@ self.addEventListener("fetch", function(event) {
 
   self.addEventListener("install", function(event) {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(function(cache) {
-      console.log('installing cache : ' + CACHE_NAME)
+    caches.open(CACHE).then(function(cache) {
+      console.log('installing cache : ' + CACHE)
       return cache.addAll(FILES_TO_CACHE);
     })
   );
@@ -69,7 +69,7 @@ self.addEventListener('activate', function (e) {
       let cacheKeeplist = keyList.filter(function (key) {
         return key.indexOf(APP_PREFIX);
       })
-      cacheKeeplist.push(CACHE_NAME);
+      cacheKeeplist.push(CACHE);
 
       return Promise.all(keyList.map(function (key, i) {
         if (cacheKeeplist.indexOf(key) === -1) {
